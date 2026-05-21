@@ -57,8 +57,13 @@ model_cfa1 <- 'inc =~ rebounds_per100Std + astTovStd + plusMinusPoints_per100Std
 cfa1 <- bsem(model_cfa1, data=sub)
 summary(cfa1, standardized=TRUE)
 standardizedSolution(cfa1) %>% filter(op == "=~") %>% group_by(lhs) %>% summarise (AVE = sum(est.std^2) / n())
-compRelSEM(cfa1)
 round(apply({m <- inspect(cfa1, "cor.lv")^2; diag(m) <- NA; m}, 1, max, na.rm = TRUE), 3)
+# CR
+load <- standardizedSolution(cfa1)[standardizedSolution(cfa1)$op == "=~", ]
+load %>% group_by(lhs) %>% summarise(lambda = list(est.std), CR = {
+  lam <- est.std
+  theta <- 1 - lam^2
+  (sum(lam)^2) / ((sum(lam)^2) + sum(theta))})
 
 # CFA2
 model_cfa2 <- 'inc =~ rebounds_per100Std + astTovStd + plusMinusPoints_per100Std
@@ -68,8 +73,13 @@ model_cfa2 <- 'inc =~ rebounds_per100Std + astTovStd + plusMinusPoints_per100Std
 cfa2 <- bsem(model_cfa2, data=sub)
 summary(cfa2, standardized=TRUE)
 standardizedSolution(cfa2) %>% filter(op == "=~") %>% group_by(lhs) %>% summarise (AVE = sum(est.std^2) / n())
-compRelSEM(cfa2)
 round(apply({m <- inspect(cfa2, "cor.lv")^2; diag(m) <- NA; m}, 1, max, na.rm = TRUE), 3)
+# CR
+load <- standardizedSolution(cfa2)[standardizedSolution(cfa2)$op == "=~", ]
+load %>% group_by(lhs) %>% summarise(lambda = list(est.std), CR = {
+  lam <- est.std
+  theta <- 1 - lam^2
+  (sum(lam)^2) / ((sum(lam)^2) + sum(theta))})
 
 # CFA3
 model_cfa3 <- 'inc =~ rebounds_per100Std + astTovStd + plusMinusPoints_per100Std
@@ -77,8 +87,13 @@ model_cfa3 <- 'inc =~ rebounds_per100Std + astTovStd + plusMinusPoints_per100Std
 cfa3 <- bsem(model_cfa3, data=sub)
 summary(cfa3, standardized=TRUE)
 standardizedSolution(cfa3) %>% filter(op == "=~") %>% group_by(lhs) %>% summarise (AVE = sum(est.std^2) / n())
-compRelSEM(cfa3)
 round(apply({m <- inspect(cfa3, "cor.lv")^2; diag(m) <- NA; m}, 1, max, na.rm = TRUE), 3)
+# CR
+load <- standardizedSolution(cfa3)[standardizedSolution(cfa3)$op == "=~", ]
+load %>% group_by(lhs) %>% summarise(lambda = list(est.std), CR = {
+  lam <- est.std
+  theta <- 1 - lam^2
+  (sum(lam)^2) / ((sum(lam)^2) + sum(theta))})
 
 # Model (Non-Bayes)
 sub <- Data01[, c("playerteamName", "rebounds_per100Std", "astTovStd", "plusMinusPoints_per100Std", "turnovers_per100", "freeThrowsMade_per100", "fieldGoalsMade_per100", "salary_adj")]
@@ -111,7 +126,7 @@ sem1 <- bsem(model_sem_ml, data=sub, cluster="playerteamName")
 summary(sem1, standardized=TRUE)
 
 # Multilevel exploration
-pe <- parameterEstimates(fit, standardized = TRUE)
+pe <- parameterEstimates(sem1, standardized = TRUE)
 within  <- subset(pe, level==1)
 between <- subset(pe, level==2)
 
